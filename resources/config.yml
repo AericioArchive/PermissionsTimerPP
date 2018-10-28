@@ -1,0 +1,4 @@
+# PermissionsTimerPP (PTPP)
+
+# How often should PTPP check the player's expiration time? (20 ticks = 1 second)
+check-tick-rate: 20

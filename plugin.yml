@@ -1,0 +1,36 @@
+name: PermissionsTimerPP
+main: Aericio\PermissionsTimerPP\PermissionsTimerPP
+version: 1.0.0
+api: 3.0.0
+author: Aericio
+description: Addon for PurePerms for timed player permissions.
+depend: [PurePerms]
+website: https://aericio.net/
+permissions:
+ permissionstimerpp:
+  default: op
+  description: "PermissionsTimerPP root permission node"
+  children:
+  permissionstimerpp.command:
+    default: false
+    description: "Allows the use of all PermissionsTimerPP Commands"
+    children:
+      permissionstimerpp.command.permtimer:
+        default: false
+        description: "Allows the use of the /permtimer"
+        children:
+          permissionstimerpp.command.permtimer.help:
+            default: true
+            description: "Allows the use of /permtimer help"
+          permissionstimerpp.command.permtimer.about:
+            default: true
+            description: "Allows the use of /permtimer about"
+          permissionstimerpp.command.permtimer.set:
+            default: op
+            description: "Allows the use of /permtimer set"
+          permissionstimerpp.command.permtimer.remove:
+            default: op
+            description: "Allows the use of /permtimer remove"
+          permissionstimerpp.command.permtimer.time:
+            default: true
+            description: "Allows the use of /permtimer time"
