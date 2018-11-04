@@ -101,8 +101,7 @@ class SQLite3
         $permissions = $this->getPermissions($player);
         if (is_null($permissions)) return null;
         if (isset($permissions[$permission])) {
-            $value = array_search($permission, $permissions[$permission]);
-            unset($value);
+            unset($permissions[$permission]);
             $stmt = $this->db->prepare("UPDATE players SET permissions = :permissions WHERE name = :name");
             $stmt->bindValue(":name", $player->getLowerCaseName(), SQLITE3_TEXT);
             $stmt->bindValue(":permissions", serialize($permissions), SQLITE3_TEXT);

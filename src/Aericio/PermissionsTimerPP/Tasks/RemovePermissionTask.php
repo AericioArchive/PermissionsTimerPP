@@ -40,11 +40,7 @@ class RemovePermissionTask extends Task
                 if (is_null($time)) continue;
                 if (time() > $time) {
                     $plugin->getPurePerms()->getUserDataMgr()->removeNode($player, $permissionName);
-                    $database->setPermissionTime($player, $permissionName, 0);
-                    if ($database->getPermissionsTime($player, $permissionName) === 0) {
-                        $database->deleteEntry($player, $permissionName);
-                    }
-                    return;
+                    $database->deleteEntry($player, $permissionName);
                 }
             }
         }
