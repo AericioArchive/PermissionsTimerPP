@@ -35,14 +35,14 @@ class RemovePermissionTask extends Task
         $database = $plugin->getDatabase();
         foreach ($plugin->getServer()->getOnlinePlayers() as $player) {
             if (is_null($database->getPlayer($player))) continue;
-            foreach ($database->getPermissions($player) as $permission) {
-                $time = $database->getPermissionsTime($player, $permission);
+            foreach ($database->getPermissions($player) as $permissionName => $permission) {
+                $time = $database->getPermissionsTime($player, $permissionName);
                 if (is_null($time)) continue;
                 if (time() > $time) {
-                    $plugin->getPurePerms()->getUserDataMgr()->removeNode($player, $permission);
-                    $database->setPermissionTime($player, $permission, 0);
-                    if ($database->getPermissionsTime($player, $permission) == 0) {
-                        $database->deleteEntry($player, $permission);
+                    $plugin->getPurePerms()->getUserDataMgr()->removeNode($player, $permissionName);
+                    $database->setPermissionTime($player, $permissionName, 0);
+                    if ($database->getPermissionsTime($player, $permissionName) === 0) {
+                        $database->deleteEntry($player, $permissionName);
                     }
                     return;
                 }

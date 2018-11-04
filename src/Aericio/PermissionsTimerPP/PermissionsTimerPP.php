@@ -7,7 +7,6 @@ namespace Aericio\PermissionsTimerPP;
 use _64FF00\PurePerms\PurePerms;
 use Aericio\PermissionsTimerPP\Database\SQLite3;
 use Aericio\PermissionsTimerPP\Tasks\RemovePermissionTask;
-use pocketmine\Player;
 use pocketmine\plugin\PluginBase;
 
 /**

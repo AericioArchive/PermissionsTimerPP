@@ -42,7 +42,6 @@ class PermTimerCommand extends PluginCommand
         $plugin = $this->getPlugin();
         if ($plugin instanceof PermissionsTimerPP) {
             $database = $plugin->getDatabase();
-            $pureperms = $plugin->getPurePerms();
             $perms = TF::RED . "You do not have permission to use this command!";
             if (isset($args[0])) {
                 switch ($args[0]) {
@@ -72,14 +71,12 @@ class PermTimerCommand extends PluginCommand
                         var_dump("ADD " . $args[1], $args[2], $args[3]);
                         $player = $plugin->getServer()->getPlayerExact($args[1]);
                         if ($player instanceof Player && $player->isOnline()) {
-                            $checkDb = $database->getPlayer($player);
-                            if (!isset($checkDb)) {
+                            if (is_null($database->getPlayer($player))) {
                                 $sender->sendMessage(TF::RED . 'User could not be found in the database!');
                                 return;
-                            }
-                            if (!is_null($checkDb)) {
+                            } else {
                                 $database->addPermissionTime($player, $args[2], intval($args[3]));
-                                $sender->sendMessage(TF::GREEN . 'Successfully added ' . $args[3] . ' seconds for ' . $args[2] . ' for ' . $player);
+                                $sender->sendMessage(TF::GREEN . 'Successfully added ' . $args[3] . ' seconds for ' . $args[2] . ' for ' . $player->getName());
                             }
                         } else {
                             $sender->sendMessage(TF::RED . 'Error: player must be online to add time!');
@@ -97,14 +94,12 @@ class PermTimerCommand extends PluginCommand
                         var_dump("REMOVE " . $args[1], $args[2], intval($args[3]));
                         $player = $plugin->getServer()->getPlayerExact($args[1]);
                         if ($player instanceof Player && $player->isOnline()) {
-                            $checkDb = $database->getPlayer($player);
-                            if (!isset($checkDb)) {
+                            if (is_null($database->getPlayer($player))) {
                                 $sender->sendMessage(TF::RED . 'User could not be found in the database!');
                                 return;
-                            }
-                            if (!is_null($checkDb)) {
+                            } else {
                                 $database->removePermissionTime($player, $args[2], $args[3]);
-                                $sender->sendMessage(TF::GREEN . 'Successfully removed ' . $args[3] . ' seconds for ' . $args[2] . ' for ' . $player);
+                                $sender->sendMessage(TF::GREEN . 'Successfully removed ' . $args[3] . ' seconds for ' . $args[2] . ' for ' . $player->getName());
                             }
                         } else {
                             $sender->sendMessage(TF::RED . 'Error: player must be online to remove time!');
@@ -123,7 +118,8 @@ class PermTimerCommand extends PluginCommand
                         $player = $plugin->getServer()->getPlayerExact($args[1]);
                         if ($player instanceof Player && $player->isOnline()) {
                             $database->setPermissionTime($player, $args[2], intval($args[3]));
-                            $sender->sendMessage(TF::GREEN . 'Successfully set ' . $args[3] . ' seconds for ' . $args[2] . ' for ' . $player);
+                            $plugin->getPurePerms()->getUserDataMgr()->setNode($player, $args[2], 0);
+                            $sender->sendMessage(TF::GREEN . 'Successfully set ' . $args[3] . ' seconds for ' . $args[2] . ' for ' . $player->getName());
                         } else {
                             $sender->sendMessage(TF::RED . 'Error: player must be online to set time!');
                         }
@@ -139,18 +135,30 @@ class PermTimerCommand extends PluginCommand
                         }
                         var_dump("TIME " . $args[1], $args[2]);
                         $player = $plugin->getServer()->getPlayerExact($args[1]);
-                        $online = $database->getPermissionsTime($player, $args[2]);
-                        $offline = $database->getOfflinePermissionsTime($args[1], $args[2]);
-                        if (!isset($online, $offline)) {
+                        if ($player instanceof Player && $player->isOnline()) {
+                            $online = $database->getPermissionsTime($player, $args[2]);
+                            if (is_null($online)) {
+                                $sender->sendMessage(TF::RED . 'User could not be found in the database!');
+                                return;
+                            } else {
+                                $time = $online - time();
+                                $days = floor($time / 86400);
+                                $hours = floor($time / 3600 - ($days * 24));
+                                $minutes = floor($time / 60 - (($hours + ($days * 24)) * 60));
+                                $seconds = floor($time - (($minutes + (($hours + ($days * 24)) * 60)) * 60));
+                                var_dump($online - time());
+                                $sender->sendMessage(TF::GREEN . $player->getName() . ' has ' . $days . ':' . $hours . ':' . $minutes . ':' . $seconds . ' remaining for permission ' . $args[2]);
+                            }
+                        } elseif (is_null($offline = $database->getOfflinePermissionsTime($args[1], $args[2]))) {
                             $sender->sendMessage(TF::RED . 'User could not be found in the database!');
                             return;
-                        }
-                        if ($player instanceof Player && $player->isOnline()) {
-                            if (!is_null($online)) {
-                                $sender->sendMessage(TF::GREEN . $player->getName() . ' has ' . $online . ' remaining for permission ' . $args[2]);
-                            }
-                        } elseif (is_null($offline)) {
-                            $sender->sendMessage(TF::GREEN . $args[1] . ' has ' . $offline . ' remaining for permission ' . $args[2]);
+                        } else {
+                            $time = $offline - time();
+                            $days = floor($time / 86400);
+                            $hours = floor($time / 3600 - ($days * 24));
+                            $minutes = floor($time / 60 - (($hours + ($days * 24)) * 60));
+                            $seconds = floor($time - (($minutes + (($hours + ($days * 24)) * 60)) * 60));
+                            $sender->sendMessage(TF::GREEN . $args[1] . ' has ' . $days . ':' . $hours . ':' . $minutes . ':' . $seconds . ' remaining for permission ' . $args[2]);
                         }
                         return;
                     default:

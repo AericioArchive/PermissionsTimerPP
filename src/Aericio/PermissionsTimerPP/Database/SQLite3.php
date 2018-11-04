@@ -146,10 +146,12 @@ class SQLite3
         $result = $stmt->execute();
         if ($result instanceof \SQLite3Result) {
             $data = $result->fetchArray(SQLITE3_ASSOC);
-            $permissions = unserialize($data["permissions"]);
-            $result->finalize();
-            $stmt->close();
-            return $permissions;
+            if (isset($data["permissions"])) {
+                $permissions = unserialize($data["permissions"]);
+                $result->finalize();
+                $stmt->close();
+                return $permissions;
+            }
         }
         return null;
     }
@@ -164,11 +166,13 @@ class SQLite3
         $stmt->bindValue(":name", strtolower($player), SQLITE3_TEXT);
         $result = $stmt->execute();
         if ($result instanceof \SQLite3Result) {
-            $data = $result->fetchArray(SQLITE3_ASSOC);
-            $permissions = unserialize($data["permissions"]);
-            $result->finalize();
-            $stmt->close();
-            return $permissions;
+            if (isset($data["permissions"])) {
+                $data = $result->fetchArray(SQLITE3_ASSOC);
+                $permissions = unserialize($data["permissions"]);
+                $result->finalize();
+                $stmt->close();
+                return $permissions;
+            }
         }
         return null;
     }
@@ -184,10 +188,12 @@ class SQLite3
         $result = $stmt->execute();
         if ($result instanceof \SQLite3Result) {
             $data = $result->fetchArray(SQLITE3_ASSOC);
-            $player = ($data["name"]);
-            $result->finalize();
-            $stmt->close();
-            return $player;
+            if (isset($data["name"])) {
+                $player = $data["name"];
+                $result->finalize();
+                $stmt->close();
+                return $player;
+            }
         }
         return null;
     }
